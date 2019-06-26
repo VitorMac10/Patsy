@@ -40,11 +40,22 @@ const bot_commands = {
             
             });
         }
+    }),
+    'vc': new Command('Useful voice chat commands', async (message, args, channel) => {
+        if (args[0] && args[0] === 'join') {
+            if (message.member.voiceChannel) {
+                message.member.voiceChannel.join().then(conn => {
+                    
+                });
+            } else {
+                channel.send("You must be connected to a voice channel!");
+            }
+        }
     })
 }
 
 client.on('message', message => {
-    if (message.content.startsWith(prefix)) {
+    if (message.author.id !== client.user.id && !message.author.bot && message.content.startsWith(prefix)) {
         let args = message.content.substring(prefix.length).trim().split(' ');
         let command = args.shift();
         if (bot_commands.hasOwnProperty(command)) {
