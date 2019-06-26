@@ -4,7 +4,7 @@ const discord = require('discord.js');
 const client = new discord.Client();
 const Command = require('./model/Command.js');
 
-var config = { api_token: '123abc' };
+var config = { api_token: '123abc', soundcloud_token: 'aabbcc' };
 try {
     config = require('./data/conf.json');
 } catch (e) {

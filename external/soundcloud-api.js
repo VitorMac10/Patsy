@@ -18,7 +18,6 @@ module.exports = class SoundCloud {
 			strictSSL: false
 		});
 		return new SoundCloudTrack(res.body.title, res.body.user.username, res.body.artwork_url, `${res.body.stream_url}?client_id=${this.api_key}`);
-		//return new SoundCloudSong(res.body.id, res.body.title, res.body.user.username, res.body.permalink_url, (res.body.artwork_url != 'null' ? res.body.artwork_url : res.body.user.avatar_url), res.body.stream_url + "?client_id=" + this.CLIENT_ID);
 	}
 
 	async searchTrack(query) {
