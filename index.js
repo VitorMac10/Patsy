@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const discord = require('discord.js');
 const client = new discord.Client();
-const Command = require('./commandBase.js');
+const Command = require('./model/Command.js');
 
 var config = { api_token: '123abc' };
 try {
@@ -14,9 +14,11 @@ try {
     fs.writeFileSync(path.join(data_folder, "conf.json"), JSON.stringify(config));
 }
 
+const SoundCloud = new (require('./external/soundcloud-api.js'))(config.soundcloud_token);
+
 const prefix = '!';
 const bot_commands = {
-    'help': new Command('Display helpful info', async function (message, args, channel) {
+    'help': new Command('Display helpful info', async (message, args, channel) => {
         let embed = new discord.RichEmbed();
         embed.setTitle('Bot commands');
         for (key in bot_commands) {
@@ -24,9 +26,20 @@ const bot_commands = {
         }
         channel.send(embed);
     }),
-    'say': new Command('Repeat what you said', async function (message, args, channel) {
+    'say': new Command('Repeat what you said', async (message, args, channel) => {
         message.delete();
         channel.send(args.join(' '));
+    }),
+    'sc': new Command('Play or search for a SoundCloud song', async (message, args, channel) => {
+        if (args[0] && args[0] !== 'search') {
+            SoundCloud.getTrack(args[0]).then(data => {
+            
+            });
+        } else if (args[0] === 'search') {
+            SoundCloud.searchTrack(args[1]).then(data => {
+            
+            });
+        }
     })
 }
 
