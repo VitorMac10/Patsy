@@ -47,7 +47,7 @@ const bot_commands = {
         let server = Servers[message.guild.id];
         if (args[0]) {
             if (args[0] === 'join') {
-                if (message.member.voice.channel && !(server.voiceChannel || server.voiceConnection)) {
+                if (message.member.voice.channel && !server.voiceConnection) {
                     server.voiceChannel = message.member.voice.channel;
                     server.voiceConnection = await message.member.voice.channel.join();
                     channel.send('Connected to the voice channel');
@@ -57,8 +57,9 @@ const bot_commands = {
                     channel.send("I am already connected to a voice channel!");
                 }
             } else if (args[0] === 'leave') {
-                if (server.voiceChannel || server.voiceConnection) {
+                if (server.voiceConnection) {
                     server.voiceChannel.leave();
+                    delete server.voiceConnection;
                 } else {
                     channel.send("I am not connected to a voice channel!");
                 }
@@ -93,7 +94,7 @@ client.on('message', message => {
 
 client.on('guildMemberSpeaking', (member, speaking) => {
     let server = Servers[member.guild.id];
-    if (speaking && server.voiceConnection) {
+    if (speaking && !fs.existsSync(path.join(__dirname, 'audio.wav')) && server.voiceConnection) {
         var stream = server.voiceConnection.receiver.createStream(member.user, { mode: 'pcm', end: 'silence' });
         var outputStream = fs.createWriteStream(path.join(__dirname, 'audio.wav'));
         stream.pipe(outputStream);
