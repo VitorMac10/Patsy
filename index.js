@@ -47,14 +47,11 @@ const bot_commands = {
         let server = Servers[message.guild.id];
         if (args[0]) {
             if (args[0] === 'join') {
-                if (message.member.voiceChannel && !(server.voiceChannel || server.voiceConnection)) {
-                    server.voiceChannel = message.member.voiceChannel;
-                    server.voiceConnection = await message.member.voiceChannel.join();
-                    server.receiver = server.voiceConnection.createReceiver();
-                    server.voiceConnection.on('speaking', (user, speaking) => {
-
-                    });
-                } else if (!message.member.voiceChannel) {
+                if (message.member.voice.channel && !(server.voiceChannel || server.voiceConnection)) {
+                    server.voiceChannel = message.member.voice.channel;
+                    server.voiceConnection = await message.member.voice.channel.join();
+                    message.send('Connected to the voice channel');
+                } else if (!message.member.voice.channel) {
                     channel.send("You must be connected to a voice channel!");
                 } else {
                     channel.send("I am already connected to a voice channel!");
@@ -91,6 +88,16 @@ client.on('message', message => {
         if (bot_commands.hasOwnProperty(command)) {
             bot_commands[command].executor(message, args, message.channel);
         }
+    }
+});
+
+client.on('guildMemberSpeaking', (member, speaking) => {
+    let server = Servers[member.guild.id];
+    if (speaking && server.voiceConnection) {
+        var stream = server.voiceConnection.receiver.createStream(member.user, { mode: 'pcm', end: 'silence' });
+        var outputStream = fs.createWriteStream(path.join(__dirname, 'audio.wav'));
+        stream.pipe(outputStream);
+        stream.on('end', () => console.log('ended'));
     }
 });
 
