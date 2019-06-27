@@ -50,7 +50,7 @@ const bot_commands = {
                 if (message.member.voice.channel && !(server.voiceChannel || server.voiceConnection)) {
                     server.voiceChannel = message.member.voice.channel;
                     server.voiceConnection = await message.member.voice.channel.join();
-                    message.send('Connected to the voice channel');
+                    channel.send('Connected to the voice channel');
                 } else if (!message.member.voice.channel) {
                     channel.send("You must be connected to a voice channel!");
                 } else {
