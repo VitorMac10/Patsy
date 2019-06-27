@@ -3,6 +3,7 @@ const path = require("path");
 const discord = require('discord.js');
 const client = new discord.Client();
 const Command = require('./model/Command.js');
+const Server = require('./model/Server.js');
 
 var config = { api_token: '123abc', soundcloud_token: 'aabbcc' };
 try {
@@ -15,6 +16,7 @@ try {
 }
 
 const SoundCloud = new (require('./external/soundcloud-api.js'))(config.soundcloud_token);
+var Servers = {};
 
 const prefix = '!';
 const bot_commands = {
@@ -33,26 +35,54 @@ const bot_commands = {
     'sc': new Command('Play or search for a SoundCloud song', async (message, args, channel) => {
         if (args[0] && args[0] !== 'search') {
             SoundCloud.getTrack(args[0]).then(data => {
-            
+
             });
         } else if (args[0] === 'search') {
             SoundCloud.searchTrack(args[1]).then(data => {
-            
+
             });
         }
     }),
     'vc': new Command('Useful voice chat commands', async (message, args, channel) => {
-        if (args[0] && args[0] === 'join') {
-            if (message.member.voiceChannel) {
-                message.member.voiceChannel.join().then(conn => {
-                    
-                });
-            } else {
-                channel.send("You must be connected to a voice channel!");
+        let server = Servers[message.guild.id];
+        if (args[0]) {
+            if (args[0] === 'join') {
+                if (message.member.voiceChannel && !(server.voiceChannel || server.voiceConnection)) {
+                    server.voiceChannel = message.member.voiceChannel;
+                    server.voiceConnection = await message.member.voiceChannel.join();
+                    server.receiver = server.voiceConnection.createReceiver();
+                    server.voiceConnection.on('speaking', (user, speaking) => {
+
+                    });
+                } else if (!message.member.voiceChannel) {
+                    channel.send("You must be connected to a voice channel!");
+                } else {
+                    channel.send("I am already connected to a voice channel!");
+                }
+            } else if (args[0] === 'leave') {
+                if (server.voiceChannel || server.voiceConnection) {
+                    server.voiceChannel.leave();
+                } else {
+                    channel.send("I am not connected to a voice channel!");
+                }
             }
         }
     })
 }
+
+client.on('ready', () => {
+    client.guilds.forEach(guild => {
+        Servers[guild.id] = new Server(guild.name);
+    });
+});
+
+client.on("guildCreate", guild => {
+    Servers[guild.id] = new Server(guild.name);
+})
+
+client.on("guildDelete", guild => {
+    delete Servers[guild.id];
+})
 
 client.on('message', message => {
     if (message.author.id !== client.user.id && !message.author.bot && message.content.startsWith(prefix)) {
