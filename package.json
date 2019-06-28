@@ -13,6 +13,7 @@
     "discord.js": "git+https://github.com/discordjs/discord.js.git#master",
     "node-opus": "^0.3.2",
     "request": "^2.88.0",
-    "requestretry": "^4.0.0"
+    "requestretry": "^4.0.0",
+    "stream-buffers": "^3.0.2"
   }
 }
