@@ -28,4 +28,4 @@ Default prefix is **!** (not configurable yet)
 
 > !vc leave room [Leave the room currently connected to]
 
-Obviously, this bot is still in its beta phase, but the cool stuff is already working like a charm, so feel free to try it out at [My test server](http://link.com)
+Obviously, this bot is still in its beta phase, but the cool stuff is already working like a charm, so feel free to try it out by inviting it to your server: [Invite link](https://discordapp.com/oauth2/authorize?client_id=542366085077401650&scope=bot&permissions=8)
