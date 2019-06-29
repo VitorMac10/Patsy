@@ -8,17 +8,7 @@ const Room = require('./model/Room.js');
 const SilenceFrame = require('./utils/SilenceFrame.js');
 const BufferUtils = require('./utils/BufferUtils.js');
 
-var config = { api_token: '', soundcloud_token: '' };
-try {
-    config = require('./data/conf.json');
-} catch (e) {
-    console.warn("Make sure to configure the bot: using default settings.");
-    let data_folder = path.join(__dirname, "data");
-    if (!fs.existsSync(data_folder)) fs.mkdirSync(data_folder);
-    fs.writeFileSync(path.join(data_folder, "conf.json"), JSON.stringify(config));
-}
-
-const SoundCloud = new (require('./external/soundcloud-api.js'))(config.soundcloud_token);
+const SoundCloud = new (require('./external/soundcloud-api.js'))(process.env.SOUNDCLOUD_TOKEN);
 var Servers = {};
 var Rooms = [new Room('not that much', 5), new Room('tests', 10), new Room('kit kat', 20), new Room('king', 30)];
 
@@ -154,6 +144,4 @@ client.on('guildMemberSpeaking', (member, speaking) => {
     }
 });
 
-if (config.api_token !== '') {
-    client.login(config.api_token).then(() => console.log(`Logged in as ${client.user.username}#${client.user.discriminator}`));
-}
+client.login(process.env.API_TOKEN).then(() => console.log(`Logged in as ${client.user.username}#${client.user.discriminator}`));
