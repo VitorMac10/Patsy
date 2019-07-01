@@ -106,19 +106,22 @@ const bot_commands = {
 client.on('ready', () => {
     client.guilds.forEach(guild => {
         Servers[guild.id] = new Server(guild.name);
+        console.log(`Connected to server: ${guild.name} [${guild.id}]`);
     });
 });
 
 client.on("guildCreate", guild => {
     Servers[guild.id] = new Server(guild.name);
+    console.log(`Added server: ${guild.name} [${guild.id}]`);
 })
 
 client.on("guildDelete", guild => {
     delete Servers[guild.id];
+    console.log(`Removed server: ${guild.name} [${guild.id}]`);
 })
 
 client.on('message', message => {
-    if (message.author.id !== client.user.id && !message.author.bot && message.content.startsWith(prefix)) {
+    if (message.author.id !== client.user.id && !message.author.bot && message.channel.type === 'text' && message.content.startsWith(prefix)) {
         let args = message.content.substring(prefix.length).trim().split(' ');
         let command = args.shift();
         if (bot_commands.hasOwnProperty(command)) {
